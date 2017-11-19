@@ -5,7 +5,7 @@ project, or you can finish it yourself. Luckily, you took an awesome introductio
 development course in b-school. You've got this.
 
 To-do:
-f
+
 - When a movie title is entered into the text field, figure out how to capture the value that's
   typed in the state object.
 - When the return key is pressed, use the value that's typed by the user to call the TMDB API
@@ -61,11 +61,21 @@ export default class App extends React.Component {
       movie: null
     }
   }
+
+  movieInputChanged(text){
+    this.setState({
+      movieNameInput: text
+    });
+  }
+
   movieNameInputSubmitted() {
     // Make the TMDB API call, receive results. Leave the next two lines alone.
     let url = "http://api.themoviedb.org/3/search/movie?query=" + this.state.movieNameInput + "&api_key=8ad43d355fccbef40dc3527123bb25ff&language=en-US&page=1&include_adult=false";
     fetch(url).then(response => response.json()).then(json => {
-      console.log(json);
+      console.log(json.results[0])
+      this.setState({
+        movie: json.results[0]
+      })
     });
   }
   render() {
@@ -73,9 +83,11 @@ export default class App extends React.Component {
       <View style={styles.container}>
         <TextInput style={styles.movieNameInput}
                    placeholder="Enter a movie name!"
-                   placeholderTextColor="#aaa" />
+                   placeholderTextColor="#aaa"
+                   onChangeText={(text) => this.movieInputChanged(text)}
+                   onSubmitEditing={() => this.movieNameInputSubmitted()}/>
         {/*Conditionally show the Movie component, only if there's a movie in state (so not initially)*/}
-        {this.state.movie && <Movie />}
+        {this.state.movie && <Movie movie = {this.state.movie} />}
       </View>
     );
   }
